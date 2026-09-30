@@ -1,0 +1,708 @@
+# Series registry. One entry per series_id (measure + all dimensions).
+# See PLAN.md > Data model. Validated by ingest/registry.py.
+sources:
+  rba:
+    name: Reserve Bank of Australia — statistical tables
+    landing_url: https://www.rba.gov.au/statistics/tables/
+    licence: CC BY 4.0 (RBA-sourced series only; ASX/FENICS columns excluded)
+    required: true
+    overdue_after_days: 10
+    table: observations
+  apra:
+    name: APRA — Quarterly General Insurance Performance Statistics
+    landing_url: https://www.apra.gov.au/quarterly-general-insurance-performance-statistics
+    licence: CC BY 3.0 AU
+    required: true
+    overdue_after_days: 170
+    table: observations
+  jsa_ivi:
+    name: Jobs and Skills Australia — Internet Vacancy Index
+    landing_url: https://www.jobsandskills.gov.au/data/internet-vacancy-index
+    licence: CC BY 4.0
+    required: true
+    overdue_after_days: 60
+    table: observations
+  jsa_exposure:
+    name: Jobs and Skills Australia — Gen AI Capacity Study occupation data
+    landing_url: https://www.jobsandskills.gov.au/studies/generative-artificial-intelligence-capacity-study
+    licence: CC BY 4.0
+    required: false
+    overdue_after_days: null
+    table: exposure_scores
+series:
+- series_id: rba.f1.cash_rate_target.aus.orig
+  source: rba
+  title: Cash rate target
+  source_key:
+    table: f1
+    series_id: FIRMMCRTD
+  dimensions:
+    region: AUS
+  unit: per cent
+  frequency: daily
+  adjustment: original
+  definition: The RBA Board's target for the interbank overnight cash rate, by date.
+  measure_basis: null
+  transformation: null
+  source_url: https://www.rba.gov.au/statistics/tables/csv/f1-data.csv
+  release_cadence: daily (business days)
+  breaks: []
+- series_id: apra.qgips.insurance_revenue.householders.direct.aasb17
+  source: apra
+  valid_from: '2023-07-01'
+  title: Insurance revenue — Householders
+  source_key:
+    Data item: Insurance revenue, by class of business
+    Category: Insurance revenue
+    Subject: Class of business performance
+    Stock or flow: Flow
+    Class of business: Householders
+    Class of business category: Short-tail property
+    Class of business group: Direct insurance
+  dimensions:
+    class_of_business: Householders
+    business: direct
+    basis: AASB 17 (from Jul 2023)
+    region: total operations
+  unit: AUD
+  frequency: quarterly
+  adjustment: original
+  definition: Insurance revenue recognised in the quarter under AASB 17 (GRS 310.0), direct business.
+  measure_basis:
+    gross_or_net: gross (before reinsurance)
+    period: discrete quarter (APRA-derived from year-to-date returns)
+    denominator: null
+  transformation: null
+  source_url: https://www.apra.gov.au/quarterly-general-insurance-performance-statistics
+  release_cadence: quarterly, ~2 months after quarter end
+  breaks:
+  - &id001
+    date: '2023-07-01'
+    description: APRA reporting framework and AASB 17 from 1 July 2023. Not comparable with the historical (pre-July
+      2023) publication; never splice.
+- series_id: apra.qgips.insurance_revenue.domestic_motor.direct.aasb17
+  source: apra
+  valid_from: '2023-07-01'
+  title: Insurance revenue — Domestic motor
+  source_key:
+    Data item: Insurance revenue, by class of business
+    Category: Insurance revenue
+    Subject: Class of business performance
+    Stock or flow: Flow
+    Class of business: Domestic motor
+    Class of business category: Short-tail property
+    Class of business group: Direct insurance
+  dimensions:
+    class_of_business: Domestic motor
+    business: direct
+    basis: AASB 17 (from Jul 2023)
+    region: total operations
+  unit: AUD
+  frequency: quarterly
+  adjustment: original
+  definition: Insurance revenue recognised in the quarter under AASB 17 (GRS 310.0), direct business.
+  measure_basis:
+    gross_or_net: gross (before reinsurance)
+    period: discrete quarter (APRA-derived from year-to-date returns)
+    denominator: null
+  transformation: null
+  source_url: https://www.apra.gov.au/quarterly-general-insurance-performance-statistics
+  release_cadence: quarterly, ~2 months after quarter end
+  breaks:
+  - *id001
+- series_id: apra.qgips.insurance_revenue.commercial_motor.direct.aasb17
+  source: apra
+  valid_from: '2023-07-01'
+  title: Insurance revenue — Commercial motor
+  source_key:
+    Data item: Insurance revenue, by class of business
+    Category: Insurance revenue
+    Subject: Class of business performance
+    Stock or flow: Flow
+    Class of business: Commercial motor
+    Class of business category: Short-tail property
+    Class of business group: Direct insurance
+  dimensions:
+    class_of_business: Commercial motor
+    business: direct
+    basis: AASB 17 (from Jul 2023)
+    region: total operations
+  unit: AUD
+  frequency: quarterly
+  adjustment: original
+  definition: Insurance revenue recognised in the quarter under AASB 17 (GRS 310.0), direct business.
+  measure_basis:
+    gross_or_net: gross (before reinsurance)
+    period: discrete quarter (APRA-derived from year-to-date returns)
+    denominator: null
+  transformation: null
+  source_url: https://www.apra.gov.au/quarterly-general-insurance-performance-statistics
+  release_cadence: quarterly, ~2 months after quarter end
+  breaks:
+  - *id001
+- series_id: apra.qgips.insurance_revenue.fire_isr.direct.aasb17
+  source: apra
+  valid_from: '2023-07-01'
+  title: Insurance revenue — Fire and ISR
+  source_key:
+    Data item: Insurance revenue, by class of business
+    Category: Insurance revenue
+    Subject: Class of business performance
+    Stock or flow: Flow
+    Class of business: Fire and ISR
+    Class of business category: Short-tail property
+    Class of business group: Direct insurance
+  dimensions:
+    class_of_business: Fire and ISR
+    business: direct
+    basis: AASB 17 (from Jul 2023)
+    region: total operations
+  unit: AUD
+  frequency: quarterly
+  adjustment: original
+  definition: Insurance revenue recognised in the quarter under AASB 17 (GRS 310.0), direct business.
+  measure_basis:
+    gross_or_net: gross (before reinsurance)
+    period: discrete quarter (APRA-derived from year-to-date returns)
+    denominator: null
+  transformation: null
+  source_url: https://www.apra.gov.au/quarterly-general-insurance-performance-statistics
+  release_cadence: quarterly, ~2 months after quarter end
+  breaks:
+  - *id001
+- series_id: apra.qgips.incurred_claims.householders.direct.aasb17
+  source: apra
+  valid_from: '2023-07-01'
+  title: Incurred claims — Householders
+  source_key:
+    Data item: Insurance service expense -  Incurred claims, by class of business
+    Category: Insurance service expense
+    Subject: Class of business performance
+    Stock or flow: Flow
+    Class of business: Householders
+    Class of business category: Short-tail property
+    Class of business group: Direct insurance
+  dimensions:
+    class_of_business: Householders
+    business: direct
+    basis: AASB 17 (from Jul 2023)
+    region: total operations
+  unit: AUD
+  frequency: quarterly
+  adjustment: original
+  definition: Incurred claims component of insurance service expense in the quarter, direct business. Published
+    as a negative (expense) value.
+  measure_basis:
+    gross_or_net: gross (before reinsurance recoveries)
+    period: discrete quarter (APRA-derived from year-to-date returns)
+    denominator: null
+  transformation: null
+  source_url: https://www.apra.gov.au/quarterly-general-insurance-performance-statistics
+  release_cadence: quarterly, ~2 months after quarter end
+  breaks:
+  - *id001
+- series_id: apra.qgips.incurred_claims.domestic_motor.direct.aasb17
+  source: apra
+  valid_from: '2023-07-01'
+  title: Incurred claims — Domestic motor
+  source_key:
+    Data item: Insurance service expense -  Incurred claims, by class of business
+    Category: Insurance service expense
+    Subject: Class of business performance
+    Stock or flow: Flow
+    Class of business: Domestic motor
+    Class of business category: Short-tail property
+    Class of business group: Direct insurance
+  dimensions:
+    class_of_business: Domestic motor
+    business: direct
+    basis: AASB 17 (from Jul 2023)
+    region: total operations
+  unit: AUD
+  frequency: quarterly
+  adjustment: original
+  definition: Incurred claims component of insurance service expense in the quarter, direct business. Published
+    as a negative (expense) value.
+  measure_basis:
+    gross_or_net: gross (before reinsurance recoveries)
+    period: discrete quarter (APRA-derived from year-to-date returns)
+    denominator: null
+  transformation: null
+  source_url: https://www.apra.gov.au/quarterly-general-insurance-performance-statistics
+  release_cadence: quarterly, ~2 months after quarter end
+  breaks:
+  - *id001
+- series_id: apra.qgips.incurred_claims.commercial_motor.direct.aasb17
+  source: apra
+  valid_from: '2023-07-01'
+  title: Incurred claims — Commercial motor
+  source_key:
+    Data item: Insurance service expense -  Incurred claims, by class of business
+    Category: Insurance service expense
+    Subject: Class of business performance
+    Stock or flow: Flow
+    Class of business: Commercial motor
+    Class of business category: Short-tail property
+    Class of business group: Direct insurance
+  dimensions:
+    class_of_business: Commercial motor
+    business: direct
+    basis: AASB 17 (from Jul 2023)
+    region: total operations
+  unit: AUD
+  frequency: quarterly
+  adjustment: original
+  definition: Incurred claims component of insurance service expense in the quarter, direct business. Published
+    as a negative (expense) value.
+  measure_basis:
+    gross_or_net: gross (before reinsurance recoveries)
+    period: discrete quarter (APRA-derived from year-to-date returns)
+    denominator: null
+  transformation: null
+  source_url: https://www.apra.gov.au/quarterly-general-insurance-performance-statistics
+  release_cadence: quarterly, ~2 months after quarter end
+  breaks:
+  - *id001
+- series_id: apra.qgips.incurred_claims.fire_isr.direct.aasb17
+  source: apra
+  valid_from: '2023-07-01'
+  title: Incurred claims — Fire and ISR
+  source_key:
+    Data item: Insurance service expense -  Incurred claims, by class of business
+    Category: Insurance service expense
+    Subject: Class of business performance
+    Stock or flow: Flow
+    Class of business: Fire and ISR
+    Class of business category: Short-tail property
+    Class of business group: Direct insurance
+  dimensions:
+    class_of_business: Fire and ISR
+    business: direct
+    basis: AASB 17 (from Jul 2023)
+    region: total operations
+  unit: AUD
+  frequency: quarterly
+  adjustment: original
+  definition: Incurred claims component of insurance service expense in the quarter, direct business. Published
+    as a negative (expense) value.
+  measure_basis:
+    gross_or_net: gross (before reinsurance recoveries)
+    period: discrete quarter (APRA-derived from year-to-date returns)
+    denominator: null
+  transformation: null
+  source_url: https://www.apra.gov.au/quarterly-general-insurance-performance-statistics
+  release_cadence: quarterly, ~2 months after quarter end
+  breaks:
+  - *id001
+- series_id: apra.qgips.insurance_service_result.householders.direct.aasb17
+  source: apra
+  valid_from: '2023-07-01'
+  title: Insurance service result (net of reinsurance) — Householders
+  source_key:
+    Data item: Insurance service result, by class of business
+    Category: Insurance service result
+    Subject: Class of business performance
+    Stock or flow: Flow
+    Class of business: Householders
+    Class of business category: Short-tail property
+    Class of business group: Direct insurance
+  dimensions:
+    class_of_business: Householders
+    business: direct
+    basis: AASB 17 (from Jul 2023)
+    region: total operations
+  unit: AUD
+  frequency: quarterly
+  adjustment: original
+  definition: Insurance revenue less insurance service expense, after the net expense from reinsurance contracts
+    held, in the quarter.
+  measure_basis:
+    gross_or_net: net (after reinsurance contracts held)
+    period: discrete quarter (APRA-derived from year-to-date returns)
+    denominator: null
+  transformation: null
+  source_url: https://www.apra.gov.au/quarterly-general-insurance-performance-statistics
+  release_cadence: quarterly, ~2 months after quarter end
+  breaks:
+  - *id001
+- series_id: apra.qgips.insurance_service_result.domestic_motor.direct.aasb17
+  source: apra
+  valid_from: '2023-07-01'
+  title: Insurance service result (net of reinsurance) — Domestic motor
+  source_key:
+    Data item: Insurance service result, by class of business
+    Category: Insurance service result
+    Subject: Class of business performance
+    Stock or flow: Flow
+    Class of business: Domestic motor
+    Class of business category: Short-tail property
+    Class of business group: Direct insurance
+  dimensions:
+    class_of_business: Domestic motor
+    business: direct
+    basis: AASB 17 (from Jul 2023)
+    region: total operations
+  unit: AUD
+  frequency: quarterly
+  adjustment: original
+  definition: Insurance revenue less insurance service expense, after the net expense from reinsurance contracts
+    held, in the quarter.
+  measure_basis:
+    gross_or_net: net (after reinsurance contracts held)
+    period: discrete quarter (APRA-derived from year-to-date returns)
+    denominator: null
+  transformation: null
+  source_url: https://www.apra.gov.au/quarterly-general-insurance-performance-statistics
+  release_cadence: quarterly, ~2 months after quarter end
+  breaks:
+  - *id001
+- series_id: apra.qgips.insurance_service_result.commercial_motor.direct.aasb17
+  source: apra
+  valid_from: '2023-07-01'
+  title: Insurance service result (net of reinsurance) — Commercial motor
+  source_key:
+    Data item: Insurance service result, by class of business
+    Category: Insurance service result
+    Subject: Class of business performance
+    Stock or flow: Flow
+    Class of business: Commercial motor
+    Class of business category: Short-tail property
+    Class of business group: Direct insurance
+  dimensions:
+    class_of_business: Commercial motor
+    business: direct
+    basis: AASB 17 (from Jul 2023)
+    region: total operations
+  unit: AUD
+  frequency: quarterly
+  adjustment: original
+  definition: Insurance revenue less insurance service expense, after the net expense from reinsurance contracts
+    held, in the quarter.
+  measure_basis:
+    gross_or_net: net (after reinsurance contracts held)
+    period: discrete quarter (APRA-derived from year-to-date returns)
+    denominator: null
+  transformation: null
+  source_url: https://www.apra.gov.au/quarterly-general-insurance-performance-statistics
+  release_cadence: quarterly, ~2 months after quarter end
+  breaks:
+  - *id001
+- series_id: apra.qgips.insurance_service_result.fire_isr.direct.aasb17
+  source: apra
+  valid_from: '2023-07-01'
+  title: Insurance service result (net of reinsurance) — Fire and ISR
+  source_key:
+    Data item: Insurance service result, by class of business
+    Category: Insurance service result
+    Subject: Class of business performance
+    Stock or flow: Flow
+    Class of business: Fire and ISR
+    Class of business category: Short-tail property
+    Class of business group: Direct insurance
+  dimensions:
+    class_of_business: Fire and ISR
+    business: direct
+    basis: AASB 17 (from Jul 2023)
+    region: total operations
+  unit: AUD
+  frequency: quarterly
+  adjustment: original
+  definition: Insurance revenue less insurance service expense, after the net expense from reinsurance contracts
+    held, in the quarter.
+  measure_basis:
+    gross_or_net: net (after reinsurance contracts held)
+    period: discrete quarter (APRA-derived from year-to-date returns)
+    denominator: null
+  transformation: null
+  source_url: https://www.apra.gov.au/quarterly-general-insurance-performance-statistics
+  release_cadence: quarterly, ~2 months after quarter end
+  breaks:
+  - *id001
+- series_id: apra.qgips.gross_written_premium.householders.direct.aasb17
+  source: apra
+  valid_from: '2023-07-01'
+  title: Gross written premium — Householders
+  source_key:
+    Data item: Gross written premium, by class of business
+    Category: Supplementary performance data
+    Subject: Class of business performance
+    Stock or flow: Flow
+    Class of business: Householders
+    Class of business category: Short-tail property
+    Class of business group: Direct insurance
+  dimensions:
+    class_of_business: Householders
+    business: direct
+    basis: AASB 17 (from Jul 2023)
+    region: total operations
+  unit: AUD
+  frequency: quarterly
+  adjustment: original
+  definition: Gross written premium in the quarter (GRS 600.0). From July 2023 includes fire service levies and
+    other state/territory levies.
+  measure_basis:
+    gross_or_net: gross
+    period: discrete quarter (APRA-derived from year-to-date returns)
+    denominator: null
+  transformation: null
+  source_url: https://www.apra.gov.au/quarterly-general-insurance-performance-statistics
+  release_cadence: quarterly, ~2 months after quarter end
+  breaks:
+  - *id001
+- series_id: apra.qgips.gross_written_premium.domestic_motor.direct.aasb17
+  source: apra
+  valid_from: '2023-07-01'
+  title: Gross written premium — Domestic motor
+  source_key:
+    Data item: Gross written premium, by class of business
+    Category: Supplementary performance data
+    Subject: Class of business performance
+    Stock or flow: Flow
+    Class of business: Domestic motor
+    Class of business category: Short-tail property
+    Class of business group: Direct insurance
+  dimensions:
+    class_of_business: Domestic motor
+    business: direct
+    basis: AASB 17 (from Jul 2023)
+    region: total operations
+  unit: AUD
+  frequency: quarterly
+  adjustment: original
+  definition: Gross written premium in the quarter (GRS 600.0). From July 2023 includes fire service levies and
+    other state/territory levies.
+  measure_basis:
+    gross_or_net: gross
+    period: discrete quarter (APRA-derived from year-to-date returns)
+    denominator: null
+  transformation: null
+  source_url: https://www.apra.gov.au/quarterly-general-insurance-performance-statistics
+  release_cadence: quarterly, ~2 months after quarter end
+  breaks:
+  - *id001
+- series_id: apra.qgips.gross_written_premium.commercial_motor.direct.aasb17
+  source: apra
+  valid_from: '2023-07-01'
+  title: Gross written premium — Commercial motor
+  source_key:
+    Data item: Gross written premium, by class of business
+    Category: Supplementary performance data
+    Subject: Class of business performance
+    Stock or flow: Flow
+    Class of business: Commercial motor
+    Class of business category: Short-tail property
+    Class of business group: Direct insurance
+  dimensions:
+    class_of_business: Commercial motor
+    business: direct
+    basis: AASB 17 (from Jul 2023)
+    region: total operations
+  unit: AUD
+  frequency: quarterly
+  adjustment: original
+  definition: Gross written premium in the quarter (GRS 600.0). From July 2023 includes fire service levies and
+    other state/territory levies.
+  measure_basis:
+    gross_or_net: gross
+    period: discrete quarter (APRA-derived from year-to-date returns)
+    denominator: null
+  transformation: null
+  source_url: https://www.apra.gov.au/quarterly-general-insurance-performance-statistics
+  release_cadence: quarterly, ~2 months after quarter end
+  breaks:
+  - *id001
+- series_id: apra.qgips.gross_written_premium.fire_isr.direct.aasb17
+  source: apra
+  valid_from: '2023-07-01'
+  title: Gross written premium — Fire and ISR
+  source_key:
+    Data item: Gross written premium, by class of business
+    Category: Supplementary performance data
+    Subject: Class of business performance
+    Stock or flow: Flow
+    Class of business: Fire and ISR
+    Class of business category: Short-tail property
+    Class of business group: Direct insurance
+  dimensions:
+    class_of_business: Fire and ISR
+    business: direct
+    basis: AASB 17 (from Jul 2023)
+    region: total operations
+  unit: AUD
+  frequency: quarterly
+  adjustment: original
+  definition: Gross written premium in the quarter (GRS 600.0). From July 2023 includes fire service levies and
+    other state/territory levies.
+  measure_basis:
+    gross_or_net: gross
+    period: discrete quarter (APRA-derived from year-to-date returns)
+    denominator: null
+  transformation: null
+  source_url: https://www.apra.gov.au/quarterly-general-insurance-performance-statistics
+  release_cadence: quarterly, ~2 months after quarter end
+  breaks:
+  - *id001
+- series_id: derived.apra.claims_ratio.householders.direct.aasb17
+  source: apra
+  valid_from: '2023-07-01'
+  title: Claims ratio (derived) — Householders
+  source_key: null
+  dimensions:
+    class_of_business: Householders
+    business: direct
+    basis: AASB 17 (from Jul 2023)
+    region: total operations
+  unit: per cent
+  frequency: quarterly
+  adjustment: original
+  definition: 'Derived by this dashboard, not published by APRA: incurred claims ÷ insurance revenue × 100 for the
+    same quarter.'
+  measure_basis:
+    gross_or_net: gross of reinsurance
+    period: discrete quarter
+    denominator: insurance revenue (not premium written or earned)
+  transformation:
+    type: ratio
+    numerator: apra.qgips.incurred_claims.householders.direct.aasb17
+    denominator: apra.qgips.insurance_revenue.householders.direct.aasb17
+    scale: -100
+  source_url: https://www.apra.gov.au/quarterly-general-insurance-performance-statistics
+  release_cadence: with APRA release
+  breaks:
+  - *id001
+- series_id: derived.apra.claims_ratio.domestic_motor.direct.aasb17
+  source: apra
+  valid_from: '2023-07-01'
+  title: Claims ratio (derived) — Domestic motor
+  source_key: null
+  dimensions:
+    class_of_business: Domestic motor
+    business: direct
+    basis: AASB 17 (from Jul 2023)
+    region: total operations
+  unit: per cent
+  frequency: quarterly
+  adjustment: original
+  definition: 'Derived by this dashboard, not published by APRA: incurred claims ÷ insurance revenue × 100 for the
+    same quarter.'
+  measure_basis:
+    gross_or_net: gross of reinsurance
+    period: discrete quarter
+    denominator: insurance revenue (not premium written or earned)
+  transformation:
+    type: ratio
+    numerator: apra.qgips.incurred_claims.domestic_motor.direct.aasb17
+    denominator: apra.qgips.insurance_revenue.domestic_motor.direct.aasb17
+    scale: -100
+  source_url: https://www.apra.gov.au/quarterly-general-insurance-performance-statistics
+  release_cadence: with APRA release
+  breaks:
+  - *id001
+- series_id: derived.apra.claims_ratio.commercial_motor.direct.aasb17
+  source: apra
+  valid_from: '2023-07-01'
+  title: Claims ratio (derived) — Commercial motor
+  source_key: null
+  dimensions:
+    class_of_business: Commercial motor
+    business: direct
+    basis: AASB 17 (from Jul 2023)
+    region: total operations
+  unit: per cent
+  frequency: quarterly
+  adjustment: original
+  definition: 'Derived by this dashboard, not published by APRA: incurred claims ÷ insurance revenue × 100 for the
+    same quarter.'
+  measure_basis:
+    gross_or_net: gross of reinsurance
+    period: discrete quarter
+    denominator: insurance revenue (not premium written or earned)
+  transformation:
+    type: ratio
+    numerator: apra.qgips.incurred_claims.commercial_motor.direct.aasb17
+    denominator: apra.qgips.insurance_revenue.commercial_motor.direct.aasb17
+    scale: -100
+  source_url: https://www.apra.gov.au/quarterly-general-insurance-performance-statistics
+  release_cadence: with APRA release
+  breaks:
+  - *id001
+- series_id: derived.apra.claims_ratio.fire_isr.direct.aasb17
+  source: apra
+  valid_from: '2023-07-01'
+  title: Claims ratio (derived) — Fire and ISR
+  source_key: null
+  dimensions:
+    class_of_business: Fire and ISR
+    business: direct
+    basis: AASB 17 (from Jul 2023)
+    region: total operations
+  unit: per cent
+  frequency: quarterly
+  adjustment: original
+  definition: 'Derived by this dashboard, not published by APRA: incurred claims ÷ insurance revenue × 100 for the
+    same quarter.'
+  measure_basis:
+    gross_or_net: gross of reinsurance
+    period: discrete quarter
+    denominator: insurance revenue (not premium written or earned)
+  transformation:
+    type: ratio
+    numerator: apra.qgips.incurred_claims.fire_isr.direct.aasb17
+    denominator: apra.qgips.insurance_revenue.fire_isr.direct.aasb17
+    scale: -100
+  source_url: https://www.apra.gov.au/quarterly-general-insurance-performance-statistics
+  release_cadence: with APRA release
+  breaks:
+  - *id001
+- series_id: jsa.ivi.ads_3mma.total.aust.orig
+  source: jsa_ivi
+  title: Online job ads — All occupations (published total)
+  source_key:
+    anzsco_code: '0'
+    state: AUST
+  dimensions:
+    occupation: All occupations (published total)
+    anzsco_code: '0'
+    classification_version: ANZSCO v1.2 (inferred from titles)
+    region: AUST
+  unit: job ads
+  frequency: monthly
+  adjustment: original
+  definition: Count of new online job advertisements (SEEK, CareerOne, Workforce Australia) coded to the ANZSCO
+    unit group, as a 3-month moving average ending in the reference month.
+  measure_basis:
+    period: 3-month moving average ending in reference month
+    aggregation: do not sum unit groups; 3mma unit groups do not add to the published total
+  transformation:
+    type: moving_average
+    window_months: 3
+    applied_by: JSA
+  source_url: https://www.jobsandskills.gov.au/data/internet-vacancy-index
+  release_cadence: monthly, third Wednesday
+  breaks: []
+- series_id: jsa.ivi.ads_3mma.anzsco4_5996.aust.orig
+  source: jsa_ivi
+  title: Online job ads — Insurance Investigators, Loss Adjusters and Risk Surveyors
+  source_key:
+    anzsco_code: '5996'
+    state: AUST
+  dimensions:
+    occupation: Insurance Investigators, Loss Adjusters and Risk Surveyors
+    anzsco_code: '5996'
+    classification_version: ANZSCO v1.2 (inferred from titles)
+    region: AUST
+  unit: job ads
+  frequency: monthly
+  adjustment: original
+  definition: Count of new online job advertisements (SEEK, CareerOne, Workforce Australia) coded to the ANZSCO
+    unit group, as a 3-month moving average ending in the reference month.
+  measure_basis:
+    period: 3-month moving average ending in reference month
+    aggregation: do not sum unit groups; 3mma unit groups do not add to the published total
+  transformation:
+    type: moving_average
+    window_months: 3
+    applied_by: JSA
+  source_url: https://www.jobsandskills.gov.au/data/internet-vacancy-index
+  release_cadence: monthly, third Wednesday
+  breaks: []

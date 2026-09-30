@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import re
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from urllib.parse import urljoin
 
@@ -110,3 +111,47 @@ def finalise(df: pd.DataFrame) -> pd.DataFrame:
     if df.duplicated(["series_id", "period_start", "vintage_id"]).any():
         raise ValueError("duplicate primary key (series_id, period_start, vintage_id)")
     return df.sort_values(["series_id", "period_start"]).reset_index(drop=True)
+
+
+@dataclass
+class SourceResult:
+    """What a source module hands to the runner: one table plus the raw files it came from."""
+
+    table: pd.DataFrame
+    raw_files: list[tuple[str, bytes]] = field(default_factory=list)
+
+
+def derive_ratios(obs: pd.DataFrame, entries: list[dict]) -> pd.DataFrame:
+    """Compute registered ratio series (transformation.type == 'ratio') from `obs`.
+
+    A derived value exists only when both inputs are observed in the same period; otherwise
+    the derived row is `unavailable` with a null value.
+    """
+    frames = []
+    for e in entries:
+        t = e.get("transformation") or {}
+        if t.get("type") != "ratio":
+            continue
+        num = obs[obs["series_id"] == t["numerator"]].set_index("period_start")
+        den = obs[obs["series_id"] == t["denominator"]].set_index("period_start")
+        if num.empty or den.empty:
+            raise SourceFormatError(f"{e['series_id']}: inputs missing for derived ratio")
+        idx = num.index.intersection(den.index)
+        n, d = num.loc[idx], den.loc[idx]
+        ok = n["observation_status"].eq("observed") & d["observation_status"].eq("observed") & d["value"].ne(0)
+        value = (t.get("scale", 1) * n["value"] / d["value"]).where(ok)
+        frames.append(
+            pd.DataFrame(
+                {
+                    "series_id": e["series_id"],
+                    "period_start": idx,
+                    "period_end": n["period_end"].values,
+                    "value": value.values,
+                    "observation_status": ["observed" if x else "unavailable" for x in ok],
+                    "source_released_at": n["source_released_at"].values,
+                    "retrieved_at": n["retrieved_at"].values,
+                    "vintage_id": n["vintage_id"].values,
+                }
+            )
+        )
+    return pd.concat(frames, ignore_index=True) if frames else obs.iloc[0:0]

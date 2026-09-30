@@ -1,0 +1,32 @@
+{
+  "sources": {
+    "apra": {
+      "last_data_change": "2026-09-30",
+      "latest_period": "2026-06-30",
+      "message": null,
+      "since": "2026-09-30",
+      "status": "ok"
+    },
+    "jsa_exposure": {
+      "last_data_change": "2026-09-30",
+      "latest_period": "2025-09-03",
+      "message": null,
+      "since": "2026-09-30",
+      "status": "ok"
+    },
+    "jsa_ivi": {
+      "last_data_change": "2026-09-30",
+      "latest_period": "2026-08-31",
+      "message": null,
+      "since": "2026-09-30",
+      "status": "ok"
+    },
+    "rba": {
+      "last_data_change": "2026-09-30",
+      "latest_period": "2026-09-29",
+      "message": null,
+      "since": "2026-09-30",
+      "status": "ok"
+    }
+  }
+}

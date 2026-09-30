@@ -10,6 +10,8 @@ import pandas as pd
 
 from ingest.common import (
     SourceFormatError,
+    SourceResult,
+    fetch,
     finalise,
     find_header_row,
     find_links,
@@ -155,3 +157,19 @@ def exposure_version_from_url(url: str) -> tuple[str, str | None]:
     m = re.search(r"(\d{8})", url)
     date = f"{m.group(1)[:4]}-{m.group(1)[4:6]}-{m.group(1)[6:]}" if m else None
     return (f"jsa_genai_capacity_{m.group(1)}" if m else "jsa_genai_capacity_unknown"), date
+
+
+def collect_ivi(entries: list[dict], sess) -> SourceResult:
+    content = fetch(latest_ivi4_url(fetch(IVI_LANDING, sess).decode("utf-8", "replace")), sess)
+    frames = []
+    for state in sorted({e["source_key"]["state"] for e in entries}):
+        codes = [e["source_key"]["anzsco_code"] for e in entries if e["source_key"]["state"] == state]
+        frames.append(ivi_to_observations(content, codes, state))
+    return SourceResult(finalise(pd.concat(frames, ignore_index=True)), [("ivi_anzsco4.xlsx", content)])
+
+
+def collect_exposure(entries: list[dict], sess) -> SourceResult:
+    url = latest_exposure_url(fetch(EXPOSURE_LANDING, sess).decode("utf-8", "replace"))
+    version, published = exposure_version_from_url(url)
+    content = fetch(url, sess)
+    return SourceResult(parse_exposure(content, version, published), [("gen_ai_data_pack.xlsx", content)])

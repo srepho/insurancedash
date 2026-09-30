@@ -14,6 +14,9 @@ import pandas as pd
 
 from ingest.common import (
     SourceFormatError,
+    SourceResult,
+    derive_ratios,
+    fetch,
     finalise,
     find_header_row,
     find_links,
@@ -119,3 +122,11 @@ def to_observations(content: bytes, series: dict[str, dict[str, str | None]], re
             )
         )
     return finalise(pd.concat(frames, ignore_index=True))
+
+
+def collect(entries: list[dict], sess) -> SourceResult:
+    content = fetch(latest_database_url(fetch(LANDING, sess).decode("utf-8", "replace")), sess)
+    direct = {e["series_id"]: e["source_key"] for e in entries if e.get("source_key")}
+    obs = to_observations(content, direct)
+    derived = derive_ratios(obs, entries)
+    return SourceResult(finalise(pd.concat([obs, derived], ignore_index=True)), [("qgips_database.xlsx", content)])

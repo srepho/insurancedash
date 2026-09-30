@@ -8,7 +8,7 @@ from datetime import datetime
 
 import pandas as pd
 
-from ingest.common import SourceFormatError, finalise, utcnow, vintage_id
+from ingest.common import SourceFormatError, SourceResult, fetch, finalise, utcnow, vintage_id
 
 BASE = "https://www.rba.gov.au/statistics/tables/csv/{table}-data.csv"
 META_LABELS = ("Title", "Description", "Frequency", "Type", "Units", "Source", "Publication date", "Series ID")
@@ -113,3 +113,21 @@ def to_observations(content: bytes, series: dict[str, str], retrieved_at=None) -
             )
         )
     return finalise(pd.concat(frames, ignore_index=True))
+
+
+def collect(entries: list[dict], sess) -> SourceResult:
+    """Fetch each RBA table named in the registry and extract its registered series."""
+    by_table: dict[str, dict[str, str]] = {}
+    for e in entries:
+        by_table.setdefault(e["source_key"]["table"], {})[e["source_key"]["series_id"]] = e["series_id"]
+    frames, raw_files = [], []
+    for table, series in sorted(by_table.items()):
+        content = fetch(table_url(table), sess)
+        md, _ = parse_table(content)
+        for rba_id in series:
+            src = md.loc[rba_id].get("Source", "") if rba_id in md.index else ""
+            if src and src != "RBA":
+                raise SourceFormatError(f"RBA {rba_id}: sourced from {src}, not licensed under RBA CC BY")
+        frames.append(to_observations(content, series))
+        raw_files.append((f"{table}-data.csv", content))
+    return SourceResult(finalise(pd.concat(frames, ignore_index=True)), raw_files)

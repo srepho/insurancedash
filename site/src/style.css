@@ -1,0 +1,91 @@
+@import url("observablehq:default.css");
+@import url("observablehq:theme-air.css") (prefers-color-scheme: light);
+@import url("observablehq:theme-near-midnight.css") (prefers-color-scheme: dark);
+
+:root {
+  --surface-1: #fcfcfb;
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted: #898781;
+  --grid: #e1e0d9;
+  --baseline: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.1);
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --series-4: #eda100;
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-serious: #ec835a;
+  --status-critical: #d03b3b;
+  --status-good-text: #006300;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --surface-1: #1a1a19;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --grid: #2c2c2a;
+    --baseline: #383835;
+    --border: rgba(255, 255, 255, 0.1);
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+    --series-4: #c98500;
+    --status-good-text: #0ca30c;
+  }
+}
+:root[data-theme="dark"] {
+  --surface-1: #1a1a19;
+  --text-primary: #ffffff;
+  --text-secondary: #c3c2b7;
+  --grid: #2c2c2a;
+  --baseline: #383835;
+  --border: rgba(255, 255, 255, 0.1);
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --series-4: #c98500;
+  --status-good-text: #0ca30c;
+}
+
+body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+
+.card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px; }
+.card h2 { margin-top: 0; font-size: 1.05rem; }
+.card h3 { margin-top: 0; }
+
+.prov {
+  margin-top: 0.6rem; font-size: 12px; line-height: 1.5; color: var(--text-secondary);
+  border-top: 1px solid var(--grid); padding-top: 0.5rem;
+}
+.prov a { color: inherit; }
+.prov .sep { color: var(--text-muted); margin: 0 0.35em; }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 0.3em; font-size: 12px; font-weight: 600;
+  padding: 0.05em 0.5em; border-radius: 999px; border: 1px solid var(--border); color: var(--text-primary);
+  white-space: nowrap;
+}
+.badge::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--dot, var(--text-muted)); }
+.badge.ok { --dot: var(--status-good); }
+.badge.overdue { --dot: var(--status-warning); }
+.badge.fetch_failed { --dot: var(--status-serious); }
+.badge.validation_failed, .badge.never_run { --dot: var(--status-critical); }
+
+.tile .label { font-size: 13px; color: var(--text-secondary); }
+.tile .value { font-size: 2.2rem; font-weight: 600; line-height: 1.15; color: var(--text-primary); }
+.tile .sub { font-size: 12px; color: var(--text-secondary); }
+
+.caveat {
+  border-left: 4px solid var(--status-warning); background: var(--surface-1); padding: 0.75rem 1rem;
+  border-radius: 4px; margin: 1rem 0;
+}
+.break-note { border-left: 4px solid var(--baseline); padding: 0.4rem 0.8rem; font-size: 13px; color: var(--text-secondary); }
+
+details.table-view { margin-top: 0.4rem; font-size: 12px; }
+details.table-view summary { cursor: pointer; color: var(--text-secondary); }
+details.table-view table { font-variant-numeric: tabular-nums; max-height: 320px; display: block; overflow: auto; }
+
+table.status td, table.status th { padding: 0.3rem 0.6rem; vertical-align: top; }
+table.status td:nth-child(n+3):nth-child(-n+5) { white-space: nowrap; font-variant-numeric: tabular-nums; }

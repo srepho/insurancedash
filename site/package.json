@@ -1,0 +1,16 @@
+{
+  "name": "insurancedash-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "clean-cache": "cd .. && uv run python -m ingest.fingerprint --clear-stale-cache",
+    "dev": "npm run clean-cache && uv run --project .. observable preview",
+    "build": "npm run clean-cache && uv run --project .. observable build && cd .. && uv run python -m ingest.fingerprint > site/dist/fingerprint.txt"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@observablehq/framework": "1.13.4"
+  }
+}
