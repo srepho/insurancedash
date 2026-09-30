@@ -1,0 +1,16 @@
+﻿F1 INTEREST RATES AND YIELDS – MONEY MARKET
+Title,Cash Rate Target,Change in the Cash Rate Target,Interbank Overnight Cash Rate,Total Return Index
+Description,Cash Rate Target on date,Change in the Cash Rate Target (in percentage points),Interbank Overnight Cash Rate on date,Total Return Index
+Frequency,Daily,as announced,Daily,Daily
+Type,Original,Original,Original,Original
+Units,Per cent,Per cent,Per cent,Index 04-Jan-2011=100
+
+
+Source,RBA,RBA,RBA,RBA
+Publication date,30-Sep-2026,30-Sep-2026,30-Sep-2026,30-Sep-2026
+Series ID,FIRMMCRTD,FIRMMCCRT,FIRMMCRID,FIRMMCTRI
+04-Jan-2011,4.75,,4.75,100.000000
+05-Jan-2011,4.75,,4.75,100.013014
+06-Jan-2011,4.75,-0.25,0.00,100.026029
+29-Sep-2026,4.35,,4.35,146.595205
+30-Sep-2026,,,,146.612676

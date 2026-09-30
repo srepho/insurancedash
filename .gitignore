@@ -1,0 +1,27 @@
+# Python / uv
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Data: raw snapshots are archived as release assets, never committed
+data/raw/
+*.duckdb
+*.duckdb.wal
+
+# Observable Framework
+node_modules/
+site/dist/
+site/src/.observablehq/cache/
+
+# Secrets and internal notes
+.env
+.env.*
+credentials.json
+NEXT_SESSION.md
+SESSION_HISTORY.md
+AGENTS.md
+*_internal.md
+.DS_Store
