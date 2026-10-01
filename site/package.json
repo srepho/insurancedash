@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test": "node --test tests/*.test.js",
     "clean-cache": "cd .. && uv run python -m ingest.fingerprint --clear-stale-cache",
     "dev": "npm run clean-cache && uv run --project .. observable preview",
     "build": "npm run clean-cache && uv run --project .. observable build && cd .. && uv run python -m ingest.fingerprint > site/dist/fingerprint.txt"

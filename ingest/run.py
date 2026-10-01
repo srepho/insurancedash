@@ -138,8 +138,14 @@ def validate_exposure(staged: pd.DataFrame, current: pd.DataFrame | None) -> Non
         raise ValidationError("duplicate exposure scores")
     if not staged["score"].dropna().between(0, 1).all():
         raise ValidationError("exposure scores outside 0-1")
-    if current is not None and len(staged) < MAX_SHRINK * len(current):
-        raise ValidationError(f"exposure table shrank from {len(current)} to {len(staged)} rows")
+    if current is not None and not current.empty:
+        latest = current.sort_values(["published_at", "score_version"]).iloc[-1]["score_version"]
+        for version, incoming in staged.groupby("score_version"):
+            previous = current[current["score_version"] == version]
+            if previous.empty:
+                previous = current[current["score_version"] == latest]
+            if len(incoming) < MAX_SHRINK * len(previous):
+                raise ValidationError(f"exposure version {version} shrank from {len(previous)} to {len(incoming)} rows")
 
 
 # --- promotion -------------------------------------------------------------------------
@@ -189,12 +195,13 @@ def promote_observations(staged: pd.DataFrame, source: str, paths: Paths) -> boo
 
 def promote_exposure(staged: pd.DataFrame, paths: Paths) -> bool:
     current = pd.read_parquet(paths.exposure) if paths.exposure.exists() else None
-    new_h = content_hash(staged, EXPOSURE_CONTENT, EXPOSURE_KEY)
-    if current is not None and content_hash(current, EXPOSURE_CONTENT, EXPOSURE_KEY) == new_h:
-        return False
     if current is not None:
         # keep earlier score versions: a new JSA release must not erase the one charts were frozen on
         staged = pd.concat([current[~current["score_version"].isin(staged["score_version"])], staged])
+        if content_hash(current, EXPOSURE_CONTENT, EXPOSURE_KEY) == content_hash(
+            staged, EXPOSURE_CONTENT, EXPOSURE_KEY
+        ):
+            return False
     write_parquet(staged.sort_values(EXPOSURE_KEY).reset_index(drop=True), paths.exposure)
     return True
 
@@ -276,17 +283,17 @@ def run_source(source: str, reg: Registry, paths: Paths, sess: requests.Session)
             cur_path = paths.observations / f"{source}.parquet"
             current = pd.read_parquet(cur_path) if cur_path.exists() else None
             validate_observations(staged, source, reg, current)
+            archive_raw(source, result.raw_files, paths)
             changed = promote_observations(staged, source, paths)
         else:
             current = pd.read_parquet(paths.exposure) if paths.exposure.exists() else None
             validate_exposure(staged, current)
+            archive_raw(source, result.raw_files, paths)
             changed = promote_exposure(staged, paths)
     except ValidationError as e:
         return "validation_failed", str(e)[:300], False
     finally:
         shutil.rmtree(stage, ignore_errors=True)
-    if changed:
-        archive_raw(source, result.raw_files, paths)
     return "ok", None, changed
 
 

@@ -10,7 +10,7 @@ Usage:
   python -m ingest.fingerprint                 # print build fingerprint
   python -m ingest.fingerprint --data          # print data fingerprint
   python -m ingest.fingerprint --clear-stale-cache
-      clear site/src/.observablehq/cache if the data fingerprint changed since the cache was filled
+      clear site/src/.observablehq/cache if loader inputs changed since the cache was filled
 """
 
 from __future__ import annotations
@@ -34,8 +34,8 @@ CODE_GLOBS = [
     "uv.lock",
 ]
 EXCLUDE_PARTS = {".observablehq", "node_modules", "dist", "__pycache__"}
+LOADER_GLOBS = [*DATA_GLOBS, "registry/**/*", "ingest/**/*.py", "site/src/data/**/*.py", "pyproject.toml", "uv.lock"]
 CACHE_DIR = ROOT / "site" / "src" / ".observablehq" / "cache"
-CACHE_STAMP = CACHE_DIR / ".data-fingerprint"
 
 
 def _files(globs: Iterable[str], root: Path) -> list[Path]:
@@ -65,9 +65,9 @@ def build_fingerprint(root: Path = ROOT) -> str:
 
 
 def clear_stale_cache(cache_dir: Path = CACHE_DIR, root: Path = ROOT) -> bool:
-    """Observable reuses loader output without noticing input Parquet changes. Returns True if cleared."""
-    stamp = cache_dir / ".data-fingerprint"
-    current = data_fingerprint(root)
+    """Invalidate cached output when data, metadata, loader code or dependencies change."""
+    stamp = cache_dir / ".loader-fingerprint"
+    current = fingerprint(LOADER_GLOBS, root)
     if stamp.exists() and stamp.read_text().strip() == current:
         return False
     cache_dir.mkdir(parents=True, exist_ok=True)

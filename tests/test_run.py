@@ -292,3 +292,70 @@ def test_real_registry_ivi_series_are_original_not_seasonally_adjusted():
     for s in load().series:
         if s["source"] == "jsa_ivi":
             assert s["adjustment"] == "original"
+
+
+def test_unchanged_data_recovers_raw_archive_on_fresh_checkout(env):
+    import shutil
+
+    paths, go = env
+    result = SourceResult(obs({"a": [1.0], "b": [2.0]}), [("source.csv", b"source data")])
+    go(result)
+    before = (paths.observations / "src.parquet").read_bytes()
+    shutil.rmtree(paths.raw)  # raw files are absent from a fresh Git checkout
+    go(result)
+    assert (paths.observations / "src.parquet").read_bytes() == before
+    assert [p.read_bytes() for p in paths.raw.rglob("*.csv")] == [b"source data"]
+
+
+def test_raw_write_failure_preserves_last_good_data(env, monkeypatch):
+    paths, go = env
+    go(SourceResult(obs({"a": [1.0], "b": [2.0]})))
+    before = (paths.observations / "src.parquet").read_bytes()
+
+    def fail(*args):
+        raise OSError("archive disk full")
+
+    monkeypatch.setattr(runmod, "archive_raw", fail)
+    out = go(SourceResult(obs({"a": [3.0], "b": [2.0]}, vintage="v2")))
+    assert out["sources"]["src"]["status"] == "validation_failed"
+    assert (paths.observations / "src.parquet").read_bytes() == before
+
+
+def exposure(version, count=10):
+    return pd.DataFrame(
+        {
+            "occupation_code": [str(1000 + i) for i in range(count)],
+            "classification_version": "ANZSCO v1.3",
+            "exposure_measure": "automation",
+            "score_version": version,
+            "occupation_title": "Occupation",
+            "score": 0.5,
+            "published_at": pd.Timestamp("2025-01-01" if version == "v1" else "2026-01-01"),
+        }
+    )
+
+
+def test_exposure_versions_preserved_and_rerun_is_unchanged(tmp_path):
+    paths = runmod.Paths(tmp_path)
+    first, second = exposure("v1"), exposure("v2")
+    assert runmod.promote_exposure(first, paths)
+    runmod.validate_exposure(second, first)
+    assert runmod.promote_exposure(second, paths)
+    before = paths.exposure.read_bytes()
+    current = pd.read_parquet(paths.exposure)
+    assert set(current.score_version) == {"v1", "v2"}
+    runmod.validate_exposure(second, current)
+    assert not runmod.promote_exposure(second, paths)
+    assert paths.exposure.read_bytes() == before
+    revised = second.copy()
+    revised.loc[0, "score"] = 0.75
+    assert runmod.promote_exposure(revised, paths)
+    final = pd.read_parquet(paths.exposure)
+    pd.testing.assert_frame_equal(final[final.score_version == "v1"].reset_index(drop=True), first)
+
+
+def test_exposure_shrink_guard_applies_to_one_version():
+    current = pd.concat([exposure("v1"), exposure("v2")])
+    for version in ("v2", "v3"):
+        with pytest.raises(runmod.ValidationError, match="shrank"):
+            runmod.validate_exposure(exposure(version, count=2), current)

@@ -48,3 +48,19 @@ def test_cache_cleared_only_when_data_changes(tmp_path):
     assert clear_stale_cache(cache, root) is True
     assert not (cache / "data/obs.json").exists()
     assert (cache / "_npm/d3.js").exists()  # npm module cache survives
+
+
+def test_registry_and_loader_dependencies_invalidate_cached_output(tmp_path):
+    root = make_tree(tmp_path)
+    cache = root / "site/src/.observablehq/cache"
+    for name in ("registry/series.yaml", "ingest/registry.py", "site/src/data/_common.py", "uv.lock"):
+        dependency = root / name
+        dependency.parent.mkdir(parents=True, exist_ok=True)
+        dependency.write_text("before")
+        clear_stale_cache(cache, root)
+        cached = cache / "observations.json"
+        cached.write_text("old metadata")
+        dependency.write_text("after")
+        assert clear_stale_cache(cache, root)
+        assert not cached.exists()
+        assert not clear_stale_cache(cache, root)

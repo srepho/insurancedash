@@ -1,4 +1,4 @@
-# Daily update: ingest -> commit data -> archive raw files -> build -> deploy to GitHub Pages.
+# Daily update: ingest -> archive raw files -> commit data -> build -> deploy to GitHub Pages.
 #
 # Deploys only when the build fingerprint (data + status + site/code) differs from the one
 # published by the LAST SUCCESSFUL DEPLOY (fetched from the live site's /fingerprint.txt).
@@ -51,21 +51,10 @@ jobs:
           uv run ruff check .
           uv run ruff format --check .
           uv run pytest -q
+          npm test --prefix site
 
       - name: Ingest all sources (staging -> validate -> promote)
         run: uv run python -m ingest.run
-
-      - name: Commit data and status changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/parquet data/status.json
-          if git diff --cached --quiet; then
-            echo "No data or status change."
-          else
-            git commit -m "data: update $(date -u +%Y-%m-%d)"
-            git push
-          fi
 
       - name: Archive new raw source files as release assets
         env:
@@ -85,6 +74,18 @@ jobs:
             cp "$f" "/tmp/$name"
             gh release upload raw-archive "/tmp/$name"
           done
+
+      - name: Commit data and status changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/parquet data/status.json
+          if git diff --cached --quiet; then
+            echo "No data or status change."
+          else
+            git commit -m "data: update $(date -u +%Y-%m-%d)"
+            git push
+          fi
 
       - name: Compare with last successful deploy
         id: compare
@@ -109,7 +110,7 @@ jobs:
         working-directory: site
         run: |
           npm ci
-          npm run build # clears the loader cache when the data fingerprint changed; writes dist/fingerprint.txt
+          npm run build # invalidates cached loaders when their inputs change; writes dist/fingerprint.txt
 
       - uses: actions/upload-pages-artifact@v3
         if: steps.compare.outputs.deploy == 'true'

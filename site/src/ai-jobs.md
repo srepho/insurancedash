@@ -10,6 +10,7 @@ title: AI & jobs
 
 ```js
 import {fmt, lineChart, provenance, seriesRows, tableView} from "./components/charts.js";
+import {BASELINES, baselineValue} from "./components/baselines.js";
 const data = await FileAttachment("data/observations.json").json();
 const status = await FileAttachment("data/status.json").json();
 const exposure = await FileAttachment("data/exposure.json").json();
@@ -22,21 +23,12 @@ const IVI = [
 ## Job ads, indexed to a baseline
 
 ```js
-const BASELINES = [
-  {label: "3 months to Nov 2022 (ChatGPT release)", from: "2022-09-01", to: "2022-11-30"},
-  {label: "12 months to Nov 2022", from: "2021-12-01", to: "2022-11-30"},
-  {label: "3 months to Nov 2019 (pre-COVID)", from: "2019-09-01", to: "2019-11-30"},
-  {label: "Single month: Nov 2022", from: "2022-11-01", to: "2022-11-30"}
-];
 const baseline = view(Inputs.select(BASELINES, {label: "Baseline", format: (b) => b.label, width: 340}));
 ```
 
 ```js
 const raw = seriesRows(data, IVI);
-const base = new Map(IVI.map((s) => {
-  const v = raw.filter((r) => r.label === s.label && r.value != null && r.date >= new Date(baseline.from) && r.date <= new Date(baseline.to + "T23:59:59"));
-  return [s.label, v.length ? v.reduce((a, r) => a + r.value, 0) / v.length : null];
-}));
+const base = new Map(IVI.map((s) => [s.label, baselineValue(raw.filter((r) => r.label === s.label), baseline)]));
 const indexed = raw.map((r) => ({...r, value: r.value == null || !base.get(r.label) ? null : (100 * r.value) / base.get(r.label)}));
 const baselineMark = Plot.rectX([baseline], {x1: (d) => new Date(d.from), x2: (d) => new Date(d.to), fill: "currentColor", fillOpacity: 0.08});
 ```
@@ -49,6 +41,8 @@ const baselineMark = Plot.rectX([baseline], {x1: (d) => new Date(d.from), x2: (d
 </div>
 
 Absolute counts are shown alongside, on separate axes, because the two series differ in scale by a factor of several hundred.
+
+Three-month baselines use the published observation ending in the selected month. The 12-month baseline averages four non-overlapping three-month observations. Single-month counts cannot be recovered from these data. If a required baseline observation is missing, that series' index is unavailable.
 
 <div class="grid grid-cols-2">
 ${IVI.map((s) => {
