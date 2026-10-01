@@ -40,7 +40,7 @@ APRA material: © Australian Prudential Regulation Authority, CC BY 3.0 AU. RBA 
 
 ## Methods
 
-- Data is fetched on a schedule, written to a staging area, and validated against the series registry (`registry/series.yaml`) before it replaces the previous good data. A failed or malformed source keeps its last validated data, and its status changes.
+- Data is fetched on a schedule, written to a staging area, and validated against the [series registry](https://github.com/srepho/insurancedash/blob/main/registry/series.yaml) before it replaces the previous good data. A failed or malformed source keeps its last validated data, and its status changes.
 - Missing, suppressed and unavailable values are stored as empty, never as zero, and appear as gaps in charts.
 - Revisions: each series' full history is hashed on every run. When any past value changes, the superseded values move to a history table, so earlier releases can be reproduced.
 - Derived measures, such as the claims ratio, are labelled as calculated by this dashboard. The registry records each derivation's formula, gross or net basis, and denominator.

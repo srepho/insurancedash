@@ -1,6 +1,9 @@
 {
   "name": "insurancedash-site",
   "private": true,
+  "license": "MIT",
+  "repository": "github:srepho/insurancedash",
+  "homepage": "https://srepho.github.io/insurancedash/",
   "type": "module",
   "scripts": {
     "test": "node --test tests/*.test.js",
