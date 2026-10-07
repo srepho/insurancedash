@@ -3,9 +3,9 @@
     "apra": {
       "last_data_change": "2026-09-30",
       "latest_period": "2026-06-30",
-      "message": "RetryError: HTTPSConnectionPool(host='www.apra.gov.au', port=443): Max retries exceeded with url: /system/files/2026-08/Quarterly%20general%20insurance%20performance%20statistics%20database%20September%202023%20to%20June%202026.xlsx (Caused by ResponseError('too many 503 error responses'))",
-      "since": "2026-10-06",
-      "status": "fetch_failed"
+      "message": null,
+      "since": "2026-10-07",
+      "status": "ok"
     },
     "jsa_exposure": {
       "last_data_change": "2026-09-30",
@@ -22,8 +22,8 @@
       "status": "ok"
     },
     "rba": {
-      "last_data_change": "2026-10-06",
-      "latest_period": "2026-10-05",
+      "last_data_change": "2026-10-07",
+      "latest_period": "2026-10-06",
       "message": null,
       "since": "2026-09-30",
       "status": "ok"
