@@ -15,15 +15,15 @@
       "status": "ok"
     },
     "jsa_ivi": {
-      "last_data_change": "2026-09-30",
-      "latest_period": "2026-08-31",
+      "last_data_change": "2026-10-21",
+      "latest_period": "2026-09-30",
       "message": null,
       "since": "2026-09-30",
       "status": "ok"
     },
     "rba": {
-      "last_data_change": "2026-10-20",
-      "latest_period": "2026-10-19",
+      "last_data_change": "2026-10-21",
+      "latest_period": "2026-10-20",
       "message": null,
       "since": "2026-09-30",
       "status": "ok"
