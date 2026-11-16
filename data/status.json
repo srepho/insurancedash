@@ -22,8 +22,8 @@
       "status": "fetch_failed"
     },
     "rba": {
-      "last_data_change": "2026-11-13",
-      "latest_period": "2026-11-12",
+      "last_data_change": "2026-11-16",
+      "latest_period": "2026-11-13",
       "message": null,
       "since": "2026-09-30",
       "status": "ok"
